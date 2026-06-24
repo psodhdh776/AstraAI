@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Astra AI — Локальный голосовой ассистент</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#07070d;color:#e2e8f0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.6;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(7,7,13,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(99,102,241,.12);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+nav .logo{font-weight:800;font-size:18px;letter-spacing:1px;color:#818cf8}
+nav .logo span{color:#e2e8f0}
+nav a{color:#94a3b8;text-decoration:none;font-size:13px;margin-left:24px;transition:.2s}
+nav a:hover{color:#818cf8}
+nav .btn{background:#818cf8;color:#fff!important;padding:8px 20px;border-radius:8px;font-weight:600}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-bg .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15}
+.hero-bg .orb:nth-child(1){width:600px;height:600px;background:#6366f1;top:-200px;left:-200px}
+.hero-bg .orb:nth-child(2){width:500px;height:500px;background:#a78bfa;bottom:-150px;right:-150px}
+.hero h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#e2e8f0,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px}
+.hero p{font-size:clamp(1rem,2vw,1.3rem);color:#94a3b8;max-width:600px;margin-bottom:40px}
+.hero .buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.hero .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;transition:.2s}
+.hero .btn-primary{background:#818cf8;color:#fff}
+.hero .btn-primary:hover{background:#6366f1;transform:translateY(-2px)}
+.hero .btn-secondary{background:rgba(129,140,248,.1);color:#818cf8;border:1px solid rgba(129,140,248,.2)}
+.hero .btn-secondary:hover{background:rgba(129,140,248,.18);transform:translateY(-2px)}
+.hero .badge{display:inline-block;padding:6px 16px;border-radius:20px;background:rgba(99,102,241,.12);color:#818cf8;font-size:12px;font-weight:600;margin-bottom:24px;letter-spacing:.5px}
+
+/* ── SECTIONS ── */
+section{padding:80px 24px;max-width:1100px;margin:0 auto}
+.section-label{font-size:12px;font-weight:700;letter-spacing:2px;color:#818cf8;text-transform:uppercase;margin-bottom:8px}
+.section-title{font-size:clamp(1.5rem,4vw,2.4rem);font-weight:800;margin-bottom:16px}
+.section-sub{color:#94a3b8;font-size:15px;max-width:600px;margin-bottom:48px}
+
+/* ── FEATURES ── */
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.feature-card{background:rgba(16,16,32,.6);border:1px solid rgba(99,102,241,.1);border-radius:14px;padding:28px 24px;transition:.3s}
+.feature-card:hover{border-color:rgba(129,140,248,.3);transform:translateY(-4px);background:rgba(16,16,32,.8)}
+.feature-card .icon{font-size:28px;margin-bottom:12px}
+.feature-card h3{font-size:15px;font-weight:700;margin-bottom:6px}
+.feature-card p{font-size:13px;color:#94a3b8;line-height:1.6}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:48px}
+.stat{background:rgba(16,16,32,.4);border:1px solid rgba(99,102,241,.08);border-radius:10px;padding:20px;text-align:center}
+.stat .num{font-size:32px;font-weight:900;color:#818cf8}
+.stat .lbl{font-size:11px;color:#64748b;margin-top:4px}
+
+/* ── ARCHITECTURE ── */
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.arch-item{background:rgba(16,16,32,.4);border:1px solid rgba(99,102,241,.08);border-radius:10px;padding:20px}
+.arch-item h4{font-size:13px;font-weight:700;color:#818cf8;margin-bottom:4px}
+.arch-item p{font-size:12px;color:#94a3b8}
+
+/* ── TECH ── */
+.tech-list{display:flex;flex-wrap:wrap;gap:8px}
+.tech-tag{padding:6px 16px;border-radius:8px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.12);font-size:12px;font-weight:600;color:#a5b4fc}
+
+/* ── CTA ── */
+.cta{text-align:center;padding:80px 24px}
+.cta h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;margin-bottom:12px}
+.cta p{color:#94a3b8;margin-bottom:32px}
+.cta .btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid rgba(99,102,241,.08);padding:32px 24px;text-align:center;font-size:13px;color:#64748b}
+footer a{color:#818cf8;text-decoration:none}
+
+/* ── SCREENSHOTS ── */
+.screenshots{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.screenshot-card{background:rgba(16,16,32,.5);border:1px solid rgba(99,102,241,.1);border-radius:12px;overflow:hidden;transition:.3s}
+.screenshot-card:hover{border-color:rgba(129,140,248,.3)}
+.screenshot-card .preview{height:180px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(16,16,32,.5));font-size:48px}
+.screenshot-card .info{padding:16px}
+.screenshot-card .info h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.screenshot-card .info p{font-size:12px;color:#94a3b8}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){nav .links{display:none}section{padding:48px 16px}}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.animate{animation:fadeUp .6s ease-out forwards;opacity:0}
+.animate.d1{animation-delay:.1s}
+.animate.d2{animation-delay:.2s}
+.animate.d3{animation-delay:.3s}
+.animate.d4{animation-delay:.4s}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo">✦ <span>Astra AI</span></div>
+<div class="links">
+<a href="#features">Возможности</a>
+<a href="#arch">Архитектура</a>
+<a href="#git">GitHub</a>
+<a href="https://github.com/psodhdh776/AstraAI" target="_blank">⭐ Репозиторий</a>
+<a href="/" class="btn">Веб-чат</a>
+</div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+<div class="hero-bg"><div class="orb"></div><div class="orb"></div></div>
+<span class="badge animate">v2.2 — Полностью локальный</span>
+<h1 class="animate d1">Astra AI</h1>
+<p class="animate d2">Современный голосовой ассистент с фрактальным мышлением,<br>глубоким обучением и полной автономией. Без единой внешней зависимости.</p>
+<div class="buttons animate d3">
+<a class="btn btn-primary" href="/">🚀 Открыть веб-интерфейс</a>
+<a class="btn btn-secondary" href="https://github.com/psodhdh776/AstraAI" target="_blank">📦 GitHub</a>
+</div>
+
+<div class="stats animate d4">
+<div class="stat"><div class="num">52</div><div class="lbl">Модуля</div></div>
+<div class="stat"><div class="num">644</div><div class="lbl">Тестов</div></div>
+<div class="stat"><div class="num">29</div><div class="lbl">Таблиц БД</div></div>
+<div class="stat"><div class="num">6</div><div class="lbl">Движков</div></div>
+</div>
+</section>
+
+<!-- ─── FEATURES ─── -->
+<section id="features">
+<div class="section-label animate">Возможности</div>
+<h2 class="section-title animate d1">Всё включено, ничего лишнего</h2>
+<p class="section-sub animate d2">Astra AI работает полностью на вашем устройстве. Никаких облаков, никаких API-ключей, никаких утечек данных.</p>
+
+<div class="features">
+<div class="feature-card animate"><div class="icon">🧠</div><h3>Фрактальное мышление</h3><p>Многошаговая цепочка рассуждений с саморефлексией, бэктрекингом и обучением на паттернах диалога.</p></div>
+<div class="feature-card animate d1"><div class="icon">🗣️</div><h3>Голос 24/7</h3><p>Постоянное прослушивание с распознаванием речи. Голосовые команды, wake-word, TTS с русским акцентом.</p></div>
+<div class="feature-card animate d1"><div class="icon">🧩</div><h3>25+ плагинов</h3><p>Погода, поиск, заметки, напоминания, скриншоты, системный мониторинг, Home Assistant, Telegram-бот.</p></div>
+<div class="feature-card animate d2"><div class="icon">💾</div><h3>Промышленная БД</h3><p>SQLite + FTS5 + шифрование + пул соединений + LRU-кэш + async flush + авто-бэкапы каждые 15 минут.</p></div>
+<div class="feature-card animate d2"><div class="icon">🌐</div><h3>4 языка</h3><p>Русский, English, Deutsch, Français. Весь интерфейс переключается на лету.</p></div>
+<div class="feature-card animate d2"><div class="icon">🎨</div><h3>4 темы</h3><p>Indigo, Cyberpunk, Light, Forest. Горячая смена без перезапуска.</p></div>
+<div class="feature-card animate d3"><div class="icon">🔌</div><h3>REST API + Web UI</h3><p>Полноценный HTTP API на порту 8741. Веб-интерфейс для удалённого управления ассистентом.</p></div>
+<div class="feature-card animate d3"><div class="icon">📊</div><h3>Аналитика</h3><p>Q-learning, граф знаний, семантическая память, эпизодическая память, дрейф личности.</p></div>
+<div class="feature-card animate d3"><div class="icon">🔮</div><h3>Online-обучение</h3><p>Извлекает факты, стиль общения, предпочтения из каждого диалога. Адаптируется к вам.</p></div>
+</div>
+</section>
+
+<!-- ─── SCREENSHOTS ─── -->
+<section id="screenshots">
+<div class="section-label animate">Скриншоты</div>
+<h2 class="section-title animate d1">Как это выглядит</h2>
+<p class="section-sub animate d2">Тёмная тема, плавные анимации, фреймлесс-окно с закруглёнными углами.</p>
+
+<div class="screenshots">
+<div class="screenshot-card animate"><div class="preview">💬</div><div class="info"><h4>Чат-интерфейс</h4><p>Markdown-разметка, история, поиск, drag & drop файлов</p></div></div>
+<div class="screenshot-card animate d1"><div class="preview">📊</div><div class="info"><h4>Панель управления</h4><p>Статистика, загрузка системы, статус TTS</p></div></div>
+<div class="screenshot-card animate d2"><div class="preview">🌐</div><div class="info"><h4>Веб-интерфейс</h4><p>Управление с любого устройства в локальной сети</p></div></div>
+</div>
+</section>
+
+<!-- ─── ARCHITECTURE ─── -->
+<section id="arch">
+<div class="section-label animate">Архитектура</div>
+<h2 class="section-title animate d1">Как это работает</h2>
+<p class="section-sub animate d2">Модульная система из 7 уровней обработки, от восприятия до саморефлексии.</p>
+
+<div class="arch-grid">
+<div class="arch-item animate"><h4>Sense</h4><p>EnsembleIntentResolver — комбинирует regex, TF-IDF и контекст для точного определения интента</p></div>
+<div class="arch-item animate d1"><h4>Reason</h4><p>ReasoningEngine — 4-шаговая цепочка рассуждений с поиском в памяти</p></div>
+<div class="arch-item animate d1"><h4>Plan</h4><p>DialoguePlanner — определяет цель диалога, отслеживает дугу разговора</p></div>
+<div class="arch-item animate d2"><h4>Execute</h4><p>EngineDispatcher — weighted voting между 6 движками с учётом успешности</p></div>
+<div class="arch-item animate d2"><h4>Learn</h4><p>OnlineLearner — извлекает паттерны, стиль, факты из каждого сообщения</p></div>
+<div class="arch-item animate d3"><h4>Reflect</h4><p>Introspection — самооценка качества ответов, автоматическая коррекция</p></div>
+<div class="arch-item animate d3"><h4>Adapt</h4><p>PersonalityDynamics — эволюция черт личности, дрейф настроения, подстройка под пользователя</p></div>
+</div>
+</section>
+
+<!-- ─── TECH ─── -->
+<section id="git">
+<div class="section-label animate">GitHub</div>
+<h2 class="section-title animate d1">CI/CD и автоматизация</h2>
+<p class="section-sub animate d2">Полный цикл: тесты → сборка → релиз. Один коммит — готовый .exe.</p>
+
+<div class="features">
+<div class="feature-card animate"><div class="icon">🤖</div><h3>GitHub Actions CI/CD</h3><p>3 job: test (3.12/3.13/3.14) → build (pyinstaller) → release (asset upload). Запускается на push в main и при публикации релиза.</p></div>
+<div class="feature-card animate d1"><div class="icon">📦</div><h3>create_release.py</h3><p>Скрипт для создания релиза через API: <code>python create_release.py --tag v2.2.0 --title "..."</code></p></div>
+<div class="feature-card animate d2"><div class="icon">🚀</div><h3>push_to_github.ps1</h3><p>PowerShell-скрипт с авторизацией через токен из <code>data/github_config.json</code>. Выполняет init → add → commit → push.</p></div>
+<div class="feature-card animate d3"><div class="icon">🔍</div><h3>REST API /github/*</h3><p><code>GET /github/status</code> — версия, статус git.<br><code>POST /github/push</code> — запуск push из веб-интерфейса.</p></div>
+</div>
+</section>
+
+<section id="tech">
+<div class="section-label animate">Технологии</div>
+<h2 class="section-title animate d1">Чистый Python, максимум контроля</h2>
+<p class="section-sub animate d2">Zero внешних ML-зависимостей. Всё написано с нуля на Python + PySide6.</p>
+
+<div class="tech-list">
+<span class="tech-tag">Python 3.12+</span>
+<span class="tech-tag">PySide6</span>
+<span class="tech-tag">CI/CD (GitHub Actions)</span>
+<span class="tech-tag">SQLite + FTS5</span>
+<span class="tech-tag">llama.cpp</span>
+<span class="tech-tag">pyttsx3</span>
+<span class="tech-tag">Vosk</span>
+<span class="tech-tag">INT8 Inference</span>
+<span class="tech-tag">Fractal Processing</span>
+<span class="tech-tag">Q-Learning</span>
+<span class="tech-tag">TF-IDF</span>
+<span class="tech-tag">Markov Chains</span>
+<span class="tech-tag">Eliza Patterns</span>
+</div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section class="cta">
+<h2 class="animate">Готовы попробовать?</h2>
+<p class="animate d1">Скачайте, установите и запустите за 5 минут. Полностью бесплатно и без интернета.</p>
+<div class="btn-group animate d2">
+<a class="btn btn-primary" href="https://github.com/psodhdh776/AstraAI/releases" target="_blank">⬇ Скачать</a>
+<a class="btn btn-secondary" href="https://github.com/psodhdh776/AstraAI" target="_blank">📖 Исходный код</a>
+<a class="btn btn-secondary" href="javascript:pushToGitHub()">🚀 Push to GitHub</a>
+<a class="btn btn-secondary" href="/">🌐 Веб-чат</a>
+</div>
+</section>
+
+<footer>
+<p>✦ Astra AI — проект с открытым исходным кодом. <a href="https://github.com/psodhdh776/AstraAI" target="_blank">GitHub</a></p>
+</footer>
+
+<script>
+const API = 'http://127.0.0.1:8741';
+
+async function pushToGitHub() {
+  const btn = event.target;
+  btn.textContent = '⏳ Pushing...';
+  btn.style.opacity = '0.6';
+  try {
+    const r = await fetch(API + '/github/push', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'});
+    const data = await r.json();
+    if (data.status === 'ok') {
+      alert('OK: код отправлен на GitHub');
+    } else {
+      alert('Push: ' + (data.stderr || data.error || 'unknown error'));
+    }
+  } catch(e) {
+    alert('Ошибка: ' + e.message);
+  }
+  btn.textContent = '🚀 Push to GitHub';
+  btn.style.opacity = '1';
+}
+</script>
+
+</body>
+</html>

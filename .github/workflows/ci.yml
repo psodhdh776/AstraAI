@@ -1,0 +1,83 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install PySide6 sounddevice psutil vosk
+          pip install pytest
+
+      - name: Compile check
+        run: python -c "
+import py_compile, glob
+for f in glob.glob('**/*.py', recursive=True):
+    py_compile.compile(f, doraise=True)"
+
+      - name: Run tests
+        run: python -m pytest tests/ -v --tb=short
+
+  build:
+    needs: test
+    runs-on: windows-latest
+    if: github.event_name == 'release'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install deps
+        run: pip install PySide6 sounddevice psutil vosk pyinstaller
+
+      - name: Build .exe
+        run: pyinstaller build_exe.spec
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AstraAI-windows
+          path: dist/AstraAI.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: AstraAI-windows
+
+      - name: Upload to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./AstraAI.exe
+          asset_name: AstraAI-${{ github.event.release.tag_name }}.exe
+          asset_content_type: application/x-msdownload

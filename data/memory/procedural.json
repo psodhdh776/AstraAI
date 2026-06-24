@@ -1,0 +1,109 @@
+{
+  "response_patterns": {
+    "greeting": [
+      {
+        "response": "Привет!",
+        "success": false,
+        "time": "2026-06-20T01:49:29"
+      },
+      {
+        "response": "Здравствуй!",
+        "success": true,
+        "time": "2026-06-20T01:49:29"
+      },
+      {
+        "response": "Привет!",
+        "success": true,
+        "time": "2026-06-20T01:59:10"
+      },
+      {
+        "response": "Привет!",
+        "success": false,
+        "time": "2026-06-20T01:59:11"
+      },
+      {
+        "response": "Здравствуй!",
+        "success": true,
+        "time": "2026-06-20T01:59:11"
+      },
+      {
+        "response": "Привет!",
+        "success": true,
+        "time": "2026-06-20T02:00:49"
+      },
+      {
+        "response": "Привет!",
+        "success": false,
+        "time": "2026-06-20T02:00:49"
+      },
+      {
+        "response": "Здравствуй!",
+        "success": true,
+        "time": "2026-06-20T02:00:49"
+      },
+      {
+        "response": "Привет!",
+        "success": true,
+        "time": "2026-06-20T07:15:07"
+      },
+      {
+        "response": "Привет!",
+        "success": false,
+        "time": "2026-06-20T07:15:07"
+      },
+      {
+        "response": "Здравствуй!",
+        "success": true,
+        "time": "2026-06-20T07:15:07"
+      },
+      {
+        "response": "Привет!",
+        "success": true,
+        "time": "2026-06-24T07:59:11"
+      },
+      {
+        "response": "Привет!",
+        "success": false,
+        "time": "2026-06-24T07:59:12"
+      },
+      {
+        "response": "Здравствуй!",
+        "success": true,
+        "time": "2026-06-24T07:59:12"
+      },
+      {
+        "response": "Привет!",
+        "success": true,
+        "time": "2026-06-24T08:12:48"
+      },
+      {
+        "response": "Привет!",
+        "success": false,
+        "time": "2026-06-24T08:12:48"
+      },
+      {
+        "response": "Здравствуй!",
+        "success": true,
+        "time": "2026-06-24T08:12:48"
+      },
+      {
+        "response": "Привет!",
+        "success": true,
+        "time": "2026-06-24T08:45:40"
+      },
+      {
+        "response": "Привет!",
+        "success": false,
+        "time": "2026-06-24T08:45:40"
+      },
+      {
+        "response": "Здравствуй!",
+        "success": true,
+        "time": "2026-06-24T08:45:40"
+      }
+    ]
+  },
+  "success_rate": {
+    "greeting": 0.5018364605208736
+  }
+}

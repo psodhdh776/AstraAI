@@ -1,0 +1,29 @@
+{
+  "user_profile": {
+    "name": "Тест",
+    "city": "Москве",
+    "age": 25,
+    "likes": [
+      "python"
+    ],
+    "dislikes": [],
+    "hobbies": [],
+    "first_seen": "2026-06-19T03:11:55",
+    "last_seen": "2026-06-24T08:45:40",
+    "total_sessions": 17,
+    "total_messages": 99
+  },
+  "facts": {
+    "name": "Тест",
+    "city": "Москве",
+    "age": 25
+  },
+  "preferences": {},
+  "vocabulary": {},
+  "style_profile": {
+    "avg_length": 2.7,
+    "emotion_level": 0.68,
+    "curiosity": 0.8,
+    "formality": 0.3
+  }
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Astra AI Web</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a14;color:#f8fafc;font-family:Segoe UI,sans-serif;min-height:100vh;display:flex}
+nav{width:200px;background:rgba(16,16,32,.85);border-right:1px solid rgba(99,102,241,.15);padding:20px 10px;display:flex;flex-direction:column;gap:4px}
+nav h2{font-size:13px;color:#6366f1;margin-bottom:12px;text-align:center;letter-spacing:1.5px}
+nav a{padding:10px 14px;border-radius:8px;color:#cbd5e1;text-decoration:none;font-size:13px;cursor:pointer;transition:.2s}
+nav a:hover{background:rgba(99,102,241,.12);color:#f8fafc}
+nav a.active{background:rgba(99,102,241,.2);color:#6366f1;font-weight:600}
+.main{flex:1;padding:24px 32px;max-width:900px}
+.page{display:none}
+.page.active{display:block}
+h1{font-size:22px;margin-bottom:6px}
+.sub{color:#64748b;font-size:13px;margin-bottom:20px}
+.card{background:rgba(16,16,32,.82);border:1px solid rgba(99,102,241,.15);border-radius:12px;padding:16px;margin-bottom:12px}
+.card h3{font-size:14px;color:#6366f1;margin-bottom:8px}
+#chat-box{height:400px;overflow-y:auto;background:rgba(24,24,48,.75);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;flex-direction:column;gap:6px}
+.msg{max-width:80%;padding:8px 12px;border-radius:8px;font-size:13px;line-height:1.5}
+.msg.user{background:#6366f1;align-self:flex-end}
+.msg.assistant{background:rgba(32,32,56,.65);align-self:flex-start}
+.msg.system{background:rgba(34,197,94,.12);align-self:center;font-size:11px;color:#22c55e}
+#chat-input{display:flex;gap:6px}
+#chat-input input{flex:1;background:rgba(24,24,48,.75);border:1px solid rgba(99,102,241,.15);border-radius:8px;padding:10px 14px;color:#f8fafc;font-size:13px}
+#chat-input input:focus{outline:none;border-color:#6366f1}
+#chat-input button{background:#6366f1;border:none;border-radius:8px;padding:10px 20px;color:white;font-weight:600;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.stat{text-align:center;padding:14px}
+.stat .val{font-size:28px;font-weight:800;color:#6366f1}
+.stat .lbl{font-size:10px;color:#64748b;margin-top:2px}
+#notes-list{display:flex;flex-direction:column;gap:6px}
+.note-item{padding:10px 14px;border-radius:8px;background:rgba(24,24,48,.75);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.note-item .del{cursor:pointer;color:#ef4444;font-size:16px}
+select,button{background:rgba(24,24,48,.75);border:1px solid rgba(99,102,241,.15);border-radius:8px;padding:8px 14px;color:#f8fafc;font-size:13px;cursor:pointer}
+button:hover{border-color:#6366f1}
+</style>
+</head>
+<body>
+<nav>
+<h2>✦ ASTRA AI</h2>
+<a class="active" onclick="show('dashboard')">📊 Панель</a>
+<a onclick="show('chat')">💬 Чат</a>
+<a onclick="show('notes')">📝 Заметки</a>
+<a onclick="show('theme')">🎨 Тема</a>
+<a onclick="show('voice')">🔊 Голос</a>
+<a onclick="show('plugins')">🧩 Плагины</a>
+</nav>
+<div class="main">
+
+<div id="page-dashboard" class="page active">
+<h1>📊 Панель управления</h1>
+<div class="sub">Astra AI — удалённое управление</div>
+<div class="grid" id="stats"></div>
+</div>
+
+<div id="page-chat" class="page">
+<h1>💬 Чат</h1>
+<div id="chat-box"></div>
+<div id="chat-input">
+<input id="chat-text" placeholder="Сообщение..." onkeydown="if(event.key==='Enter')sendChat()">
+<button onclick="sendChat()">➤</button>
+</div>
+</div>
+
+<div id="page-notes" class="page">
+<h1>📝 Заметки</h1>
+<div class="sub">Быстрые заметки ассистента</div>
+<div id="notes-list"></div>
+</div>
+
+<div id="page-theme" class="page">
+<h1>🎨 Тема</h1>
+<div class="sub">Выберите тему оформления</div>
+<select id="theme-select" onchange="setTheme(this.value)"></select>
+</div>
+
+<div id="page-voice" class="page">
+<h1>🔊 Голос</h1>
+<div class="sub">Управление голосовым выводом</div>
+<div class="card">
+<button id="voice-btn" onclick="toggleVoice()">Вкл/Выкл TTS</button>
+</div>
+</div>
+
+<div id="page-plugins" class="page">
+<h1>🧩 Плагины</h1>
+<div class="sub">Управление плагинами</div>
+<div id="plugin-list"></div>
+</div>
+
+</div>
+
+<script>
+const API = 'http://127.0.0.1:8741';
+
+async function api(method, path, body) {
+  const opts = {method,headers:{'Content-Type':'application/json'}};
+  if(body) opts.body = JSON.stringify(body);
+  const r = await fetch(API+path, opts);
+  return r.json();
+}
+
+function show(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll(`nav a[onclick*="${page}"]`).forEach(a=>a.classList.add('active'));
+  loadPage(page);
+}
+
+async function loadPage(page) {
+  if(page==='dashboard') loadDashboard();
+  if(page==='notes') loadNotes();
+  if(page==='theme') loadTheme();
+  if(page==='plugins') loadPlugins();
+}
+
+async function loadDashboard() {
+  const s = await api('GET','/status');
+  document.getElementById('stats').innerHTML = `
+    <div class="card stat"><div class="val">${s.history||0}</div><div class="lbl">Сообщений</div></div>
+    <div class="card stat"><div class="val">${s.notes||0}</div><div class="lbl">Заметок</div></div>
+    <div class="card stat"><div class="val">${s.voice_enabled?'✅':'❌'}</div><div class="lbl">TTS</div></div>
+  `;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-text');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  const box = document.getElementById('chat-box');
+  box.innerHTML += `<div class="msg user">${text}</div>`;
+  box.scrollTop = box.scrollHeight;
+  const r = await api('POST','/chat',{text});
+  box.innerHTML += `<div class="msg assistant">${r.response||'—'}</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+async function loadNotes() {
+  const d = await api('GET','/notes');
+  const el = document.getElementById('notes-list');
+  el.innerHTML = (d||[]).map((n,i)=>`<div class="note-item"><span>${n.text||n}</span></div>`).join('');
+}
+
+async function loadTheme() {
+  const s = await api('GET','/theme');
+  const sel = document.getElementById('theme-select');
+  sel.innerHTML = (s.themes||[]).map(t=>`<option value="${t}" ${t===s.theme?'selected':''}>${t}</option>`).join('');
+}
+
+async function setTheme(name) {
+  await api('POST','/theme',{theme:name});
+}
+
+async function toggleVoice() {
+  const s = await api('GET','/status');
+  await api('POST','/voice',{enabled:!s.voice_enabled});
+  document.getElementById('voice-btn').textContent = s.voice_enabled ? 'Выключить TTS' : 'Включить TTS';
+}
+
+async function loadPlugins() {
+  const el = document.getElementById('plugin-list');
+  el.innerHTML = '<div class="card">Управление плагинами доступно через REST API (GET/POST /plugins)</div>';
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

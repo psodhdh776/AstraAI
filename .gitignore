@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.spec
+*.exe
+*.zip
+*.log
+
+# Data
+data/assistant.db
+data/*.json
+data/*.key
+data/.first_run_done
+data/backups/
+data/profiles/
+data/plugins/
+
+# IDE
+.vscode/
+.idea/
+*.pyproj
+*.sln
+
+# OS
+Thumbs.db
+.DS_Store
