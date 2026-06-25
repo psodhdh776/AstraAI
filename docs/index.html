@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Astra AI — Локальный голосовой ассистент</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#07070d;color:#e2e8f0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.6;overflow-x:hidden}
+nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(7,7,13,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(99,102,241,.12);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+nav .logo{font-weight:800;font-size:18px;letter-spacing:1px;color:#818cf8}
+nav .logo span{color:#e2e8f0}
+nav a{color:#94a3b8;text-decoration:none;font-size:13px;margin-left:24px;transition:.2s}
+nav a:hover{color:#818cf8}
+nav .btn{background:#818cf8;color:#fff!important;padding:8px 20px;border-radius:8px;font-weight:600}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-bg .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15}
+.hero-bg .orb:nth-child(1){width:600px;height:600px;background:#6366f1;top:-200px;left:-200px}
+.hero-bg .orb:nth-child(2){width:500px;height:500px;background:#a78bfa;bottom:-150px;right:-150px}
+.hero h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#e2e8f0,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px}
+.hero p{font-size:clamp(1rem,2vw,1.3rem);color:#94a3b8;max-width:600px;margin-bottom:40px}
+.hero .buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.hero .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;transition:.2s}
+.hero .btn-primary{background:#818cf8;color:#fff}
+.hero .btn-primary:hover{background:#6366f1;transform:translateY(-2px)}
+.hero .btn-secondary{background:rgba(255,255,255,.06);color:#e2e8f0;border:1px solid rgba(255,255,255,.08)}
+.hero .btn-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(129,140,248,.3);transform:translateY(-2px)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:700px;margin:0 auto 60px;width:100%}
+.stat{background:rgba(16,16,32,.5);border:1px solid rgba(99,102,241,.1);border-radius:12px;padding:20px 12px;text-align:center}
+.stat .num{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:900;background:linear-gradient(135deg,#818cf8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat .label{font-size:12px;color:#64748b;margin-top:4px}
+section{padding:80px 24px;max-width:1100px;margin:0 auto}
+.section-title{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;text-align:center;margin-bottom:8px}
+.section-sub{text-align:center;color:#94a3b8;font-size:clamp(.9rem,1.2vw,1.05rem);max-width:650px;margin:0 auto 48px}
+.features{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.feature-card{background:rgba(16,16,32,.5);border:1px solid rgba(99,102,241,.08);border-radius:12px;padding:24px;transition:.3s}
+.feature-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-4px)}
+.feature-card .icon{font-size:32px;margin-bottom:12px}
+.feature-card h3{font-size:15px;font-weight:700;margin-bottom:6px}
+.feature-card p{font-size:13px;color:#94a3b8;line-height:1.5}
+.screenshots{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.screenshot-card{background:rgba(16,16,32,.5);border:1px solid rgba(99,102,241,.1);border-radius:12px;overflow:hidden;transition:.3s}
+.screenshot-card:hover{border-color:rgba(129,140,248,.3)}
+.screenshot-card .preview{height:180px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(16,16,32,.5));font-size:48px}
+.screenshot-card .info{padding:16px}
+.screenshot-card .info h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.screenshot-card .info p{font-size:12px;color:#94a3b8}
+.architecture{background:rgba(16,16,32,.5);border:1px solid rgba(99,102,241,.1);border-radius:16px;padding:32px;text-align:center}
+.architecture .layers{display:flex;flex-direction:column;gap:6px;margin-top:24px}
+.architecture .layer{padding:12px 16px;border-radius:8px;font-size:13px;font-weight:600}
+.architecture .layer:nth-child(1){background:rgba(129,140,248,.15);color:#a5b4fc}
+.architecture .layer:nth-child(2){background:rgba(167,139,250,.15);color:#c4b5fd}
+.architecture .layer:nth-child(3){background:rgba(196,181,253,.12);color:#ddd6fe}
+.architecture .layer:nth-child(4){background:rgba(52,211,153,.1);color:#6ee7b7}
+.architecture .layer:nth-child(5){background:rgba(251,191,36,.1);color:#fcd34d}
+.architecture .layer:nth-child(6){background:rgba(248,113,113,.1);color:#fca5a5}
+.architecture .layer:nth-child(7){background:rgba(129,140,248,.08);color:#a5b4fc}
+.tech-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:24px}
+.tech-tag{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.15);padding:6px 14px;border-radius:20px;font-size:12px;color:#a5b4fc;font-weight:500}
+.cta{text-align:center;padding:80px 24px}
+.cta h2{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin-bottom:12px}
+.cta p{color:#94a3b8;margin-bottom:32px;font-size:15px}
+.cta .btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta .btn-secondary{background:rgba(255,255,255,.06);color:#e2e8f0;border:1px solid rgba(255,255,255,.08);display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;transition:.2s}
+.cta .btn-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(129,140,248,.3);transform:translateY(-2px)}
+footer{text-align:center;padding:40px 24px;color:#64748b;font-size:13px}
+footer a{color:#818cf8;text-decoration:none}
+.animate{opacity:0;transform:translateY(20px);animation:fadeUp .6s forwards}
+.animate.d1{animation-delay:.15s}
+.animate.d2{animation-delay:.3s}
+.animate.d3{animation-delay:.45s}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.hero h1{font-size:2rem}.hero p{font-size:1rem}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo"><span>Astra</span> AI</div>
+<div>
+<a href="#features">Возможности</a>
+<a href="#tech">Технологии</a>
+<a href="https://github.com/psodhdh776/AstraAI" target="_blank">GitHub</a>
+<a class="btn" href="https://github.com/psodhdh776/AstraAI/releases" target="_blank">Скачать</a>
+</div>
+</nav>
+
+<div class="hero">
+<div class="hero-bg"><div class="orb"></div><div class="orb"></div></div>
+<h1 class="animate">Astra AI</h1>
+<p class="animate d1">Фрактальный голосовой ассистент с когнитивной архитектурой. Работает полностью локально — без интернета, без облаков, без слежки.</p>
+<div class="stats animate d2">
+<div class="stat"><div class="num">52</div><div class="label">Модуля</div></div>
+<div class="stat"><div class="num">644</div><div class="label">Теста</div></div>
+<div class="stat"><div class="num">29</div><div class="label">Таблиц БД</div></div>
+<div class="stat"><div class="num">6</div><div class="label">Движков</div></div>
+</div>
+<div class="buttons animate d3">
+<a class="btn btn-primary" href="https://github.com/psodhdh776/AstraAI/releases" target="_blank">⬇ Скачать v2.2.0</a>
+<a class="btn btn-secondary" href="https://github.com/psodhdh776/AstraAI" target="_blank">📖 Исходный код</a>
+</div>
+</div>
+
+<section id="features">
+<h2 class="section-title animate">Возможности</h2>
+<p class="section-sub animate d1">Astra AI объединяет 6 движков в единую когнитивную систему. Голосовое управление, текстовый чат, автоматизация и обучение.</p>
+<div class="features">
+<div class="feature-card animate"><div class="icon">🧠</div><h3>Фрактальное мышление</h3><p>Когнитивная архитектура с эмоциональным моделированием, семантической памятью и фрактальной обработкой контекста.</p></div>
+<div class="feature-card animate d1"><div class="icon">🗣️</div><h3>Голосовой ассистент</h3><p>Синтез и распознавание речи. Работает полностью офлайн. TTS, STT, управление голосом.</p></div>
+<div class="feature-card animate d2"><div class="icon">🧩</div><h3>Плагины</h3><p>Модульная система. Маркетплейс плагинов, горячие клавиши, уведомления, клипборд, Telegram бот.</p></div>
+<div class="feature-card animate d3"><div class="icon">💾</div><h3>Память</h3><p>Эпизодическая, семантическая, процедурная, долговременная. Knowledge Graph с фрактальными связями.</p></div>
+<div class="feature-card animate d1"><div class="icon">🌐</div><h3>REST API + Web UI</h3><p>Встроенный HTTP API на порту 8741. Веб-интерфейс для удалённого управления ассистентом.</p></div>
+<div class="feature-card animate d2"><div class="icon">🤖</div><h3>Локальные движки</h3><p>6 движков: чат, диалог, эмоции, семантика, фракталы, мышление. Zero внешних ML-зависимостей.</p></div>
+</div>
+</section>
+
+<section id="screenshots">
+<h2 class="section-title animate">Скриншоты</h2>
+<p class="section-sub animate d1">Astra AI работает на Windows и Android.</p>
+<div class="screenshots">
+<div class="screenshot-card animate"><div class="preview">💬</div><div class="info"><h4>Веб-интерфейс</h4><p>Markdown-разметка, темы, тени, drag & drop файлов</p></div></div>
+<div class="screenshot-card animate d1"><div class="preview">🎤</div><div class="info"><h4>Голосовое управление</h4><p>Распознавание, синтез речи, обучение TTS</p></div></div>
+<div class="screenshot-card animate d2"><div class="preview">📊</div><div class="info"><h4>Веб-чат</h4><p>Управление с телефона через браузер</p></div></div>
+</div>
+</section>
+
+<section id="tech">
+<h2 class="section-title animate">Архитектура</h2>
+<p class="section-sub animate d1">7-слойная архитектура с фрактальным ядром.</p>
+<div class="architecture animate d2">
+<div class="layers">
+<div class="layer">🧠 Фрактальное ядро — когнитивная обработка</div>
+<div class="layer">🗣️ Голосовые движки — TTS / STT</div>
+<div class="layer">💬 Чат / Диалог — марковские цепи + TF-IDF</div>
+<div class="layer">📦 Память — эпизодическая + семантическая + процедурная</div>
+<div class="layer">🔌 Плагины — маркетплейс, Telegram, горячие клавиши</div>
+<div class="layer">🌐 REST API + Web UI — удалённое управление</div>
+<div class="layer">📱 Android — портативный движок</div>
+</div>
+</div>
+<div class="tech-tags">
+<span class="tech-tag">Python</span>
+<span class="tech-tag">PySide6</span>
+<span class="tech-tag">SQLite + FTS5</span>
+<span class="tech-tag">TTS / STT</span>
+<span class="tech-tag">REST API</span>
+<span class="tech-tag">Fractal Processing</span>
+<span class="tech-tag">Q-Learning</span>
+<span class="tech-tag">TF-IDF</span>
+<span class="tech-tag">Markov Chains</span>
+<span class="tech-tag">Eliza Patterns</span>
+</div>
+</section>
+
+<section class="cta">
+<h2 class="animate">Готовы попробовать?</h2>
+<p class="animate d1">Скачайте, установите и запустите за 5 минут. Полностью бесплатно и без интернета.</p>
+<div class="btn-group animate d2">
+<a class="btn btn-primary" href="https://github.com/psodhdh776/AstraAI/releases" target="_blank">⬇ Скачать</a>
+<a class="btn btn-secondary" href="https://github.com/psodhdh776/AstraAI" target="_blank">📖 Исходный код</a>
+<a class="btn btn-secondary" href="https://github.com/psodhdh776/AstraAI" target="_blank">🚀 GitHub</a>
+</div>
+</section>
+
+<footer>
+<p>✦ Astra AI — проект с открытым исходным кодом. <a href="https://github.com/psodhdh776/AstraAI" target="_blank">GitHub</a></p>
+</footer>
+
+</body>
+</html>
