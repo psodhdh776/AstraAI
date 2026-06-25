@@ -6,6 +6,8 @@
   python create_release.py --tag v2.2.0 --title "v2.2.0 — Фрактальное мышление"
 """
 import argparse, json, os, ssl, sys, urllib.request
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 from pathlib import Path
 
 REPO = "psodhdh776/AstraAI"
