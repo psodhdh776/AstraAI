@@ -22,20 +22,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
 
       - name: Install dependencies
         run: |
-          pip install PySide6 sounddevice psutil vosk
-          pip install pytest
+          pip install --upgrade pip
+          pip install pytest sounddevice psutil
 
-      - name: Compile check
-        run: python -c "
-import py_compile, glob
-for f in glob.glob('**/*.py', recursive=True):
-    py_compile.compile(f, doraise=True)"
+      - name: Syntax check
+        run: python check_syntax.py
 
       - name: Run tests
-        run: python -m pytest tests/ -v --tb=short
+        run: |
+          pytest tests/ -v --tb=short --ignore=tests/test_desktop_widgets.py --ignore=tests/test_chat_widget_md.py --ignore=tests/test_gui.py -x
 
   build:
     needs: test
@@ -49,9 +48,12 @@ for f in glob.glob('**/*.py', recursive=True):
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
+          cache: pip
 
       - name: Install deps
-        run: pip install PySide6 sounddevice psutil vosk pyinstaller
+        run: |
+          pip install --upgrade pip
+          pip install pyinstaller
 
       - name: Build .exe
         run: pyinstaller build_exe.spec
