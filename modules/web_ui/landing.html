@@ -210,6 +210,18 @@ footer a{color:#818cf8;text-decoration:none}
 </div>
 </section>
 
+<!-- ─── GITHUB CI/CD ─── -->
+<section style="padding:80px 24px;max-width:800px;margin:0 auto">
+<h2 class="section-title animate">GitHub CI/CD</h2>
+<p class="section-sub animate d1">Автоматизация push и релизов прямо из веб-интерфейса.</p>
+<div class="features animate d2" style="max-width:600px;margin:0 auto">
+<div class="feature-card"><div class="icon">🚀</div><h3>push_to_github.ps1</h3><p>PowerShell-скрипт с авторизацией из <code>data/github_config.json</code>. Выполняет init → add → commit → push.</p></div>
+<div class="feature-card"><div class="icon">🏷️</div><h3>create_release.py</h3><p>Скрипт для создания релизов через API: <code>python create_release.py --tag v2.2.0 --title "..."</code></p></div>
+<div class="feature-card"><div class="icon">⚡</div><h3>REST API /github/*</h3><p><code>GET /github/status</code> — версия, статус git.<br><code>POST /github/push</code> — запуск push.<br><code>POST /github/release</code> — создание релиза.<br><code>GET /github/check-update</code> — проверка обновлений.<br><code>POST /github/update</code> — загрузка обновления.</p></div>
+<div class="feature-card"><div class="icon">🤖</div><h3>GitHub Actions CI</h3><p>Автоматическое тестирование (Python 3.12-3.14) на каждый push. Сборка .exe при публикации релиза.</p></div>
+</div>
+</section>
+
 <!-- ─── CTA ─── -->
 <section class="cta">
 <h2 class="animate">Готовы попробовать?</h2>
@@ -217,7 +229,8 @@ footer a{color:#818cf8;text-decoration:none}
 <div class="btn-group animate d2">
 <a class="btn btn-primary" href="https://github.com/psodhdh776/AstraAI/releases" target="_blank">⬇ Скачать</a>
 <a class="btn btn-secondary" href="https://github.com/psodhdh776/AstraAI" target="_blank">📖 Исходный код</a>
-<a class="btn btn-secondary" href="javascript:pushToGitHub()">🚀 Push to GitHub</a>
+<a class="btn btn-secondary" href="javascript:pushToGitHub()">🚀 Push</a>
+<a class="btn btn-secondary" href="javascript:createRelease()">🏷️ Release</a>
 <a class="btn btn-secondary" href="/">🌐 Веб-чат</a>
 </div>
 </section>
@@ -244,7 +257,30 @@ async function pushToGitHub() {
   } catch(e) {
     alert('Ошибка: ' + e.message);
   }
-  btn.textContent = '🚀 Push to GitHub';
+  btn.textContent = '🚀 Push';
+  btn.style.opacity = '1';
+}
+
+async function createRelease() {
+  const tag = prompt('Тег (например v2.3.0):');
+  if (!tag) return;
+  const title = prompt('Заголовок:', tag);
+  if (!title) return;
+  const btn = event.target;
+  btn.textContent = '⏳ Creating...';
+  btn.style.opacity = '0.6';
+  try {
+    const r = await fetch(API + '/github/release', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tag, title, body: 'Релиз создан через веб-интерфейс'})});
+    const data = await r.json();
+    if (data.status === 'ok') {
+      alert(`OK: релиз создан → ${data.html_url}`);
+    } else {
+      alert('Release: ' + (data.error || 'unknown error'));
+    }
+  } catch(e) {
+    alert('Ошибка: ' + e.message);
+  }
+  btn.textContent = '🏷️ Release';
   btn.style.opacity = '1';
 }
 </script>
