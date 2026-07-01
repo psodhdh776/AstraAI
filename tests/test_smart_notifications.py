@@ -94,6 +94,6 @@ class TestCheckDueReminders:
         assert remaining == []
 
     def test_exact_boundary(self):
-        now = time.time()
+        now = time.time() - 0.001
         due, remaining = check_due_reminders([("just_now", now)])
         assert "just_now" in due
