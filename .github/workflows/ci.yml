@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install pytest sounddevice psutil
+          pip install pytest sounddevice psutil numpy
 
       - name: Syntax check
         run: python check_syntax.py

@@ -110,10 +110,15 @@ class _Handler(BaseHTTPRequestHandler):
                 "endpoints": {
                     "push": "POST /github/push  (body: {\"message\": \"...\"})",
                     "release": "POST /github/release  (body: {\"tag\": \"v2.2.0\", \"title\": \"...\", \"body\": \"...\"})",
+                    "check_update": "GET /github/check-update",
+                    "update": "POST /github/update",
                 },
             })
+        elif self.path == "/github/check-update":
+            from modules.auto_update import check_version
+            self._send(check_version())
         else:
-            self._send({"error": "not found", "paths": ["/status", "/history", "/notes", "/theme", "/plugins/available", "/plugins/installed", "/profiles", "/backups", "/memory", "/memory/user", "/web", "/landing", "/github/status", "/github/push", "/github/release"]}, 404)
+            self._send({"error": "not found", "paths": ["/status", "/history", "/notes", "/theme", "/plugins/available", "/plugins/installed", "/profiles", "/backups", "/memory", "/memory/user", "/web", "/landing", "/github/status", "/github/check-update", "/github/push", "/github/release", "/github/update"]}, 404)
 
     def do_POST(self):
         a = self.assistant
@@ -262,6 +267,13 @@ class _Handler(BaseHTTPRequestHandler):
             except urllib.error.HTTPError as e:
                 detail = e.read().decode()
                 self._send({"error": f"GitHub API error {e.code}: {detail}"}, 502)
+            except Exception as e:
+                self._send({"error": str(e)}, 500)
+        elif self.path == "/github/update":
+            from modules.auto_update import download_update
+            try:
+                ok = download_update()
+                self._send({"status": "ok" if ok else "error", "updated": ok})
             except Exception as e:
                 self._send({"error": str(e)}, 500)
         else:
